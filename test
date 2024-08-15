@@ -17,27 +17,28 @@ font = pygame.font.Font(None, 36)
 
 # Output list
 outputs = []
+shapes = {}
 
 def draw_circle():
-    pygame.draw.circle(screen, BLACK, (WIDTH // 2, HEIGHT // 2), 50)
+    pygame.draw.circle(screen, BLACK, (WIDTH // 2, HEIGHT // 2), 50, 2)
 
 def draw_square(position):
     x, y = position
-    pygame.draw.rect(screen, BLACK, (x, y, 50, 50))
+    pygame.draw.rect(screen, BLACK, (x, y, 50, 50), 2)
 
 def draw_grid():
-    for x in range(0, WIDTH, 50):
-        pygame.draw.line(screen, BLACK, (x, 0), (x, HEIGHT))
-    for y in range(0, HEIGHT, 50):
-        pygame.draw.line(screen, BLACK, (0, y), (WIDTH, y))
-
-def parse_position(pos):
-    column = ord(pos[0].lower()) - ord('a')
-    row = int(pos[1]) - 1
-    return column * 50, row * 50
+    for i in range(1, 6):
+        pygame.draw.line(screen, BLACK, (100, i * 100), (600, i * 100), 2)
+        pygame.draw.line(screen, BLACK, (i * 100, 100), (i * 100, 600), 2)
+    for i in range(5):
+        label = font.render(chr(65 + i), True, BLACK)
+        screen.blit(label, (50, 100 + i * 100))
+        for j in range(1, 6):
+            label = font.render(str(j), True, BLACK)
+            screen.blit(label, (100 + i * 100, 50))
 
 def main():
-    global outputs
+    global outputs, shapes
     input_text = ""
     clock = pygame.time.Clock()
 
@@ -56,14 +57,14 @@ def main():
                     elif input_text.startswith("circle"):
                         outputs.append("Drawing a circle...")
                     elif input_text.startswith("square"):
-                        if len(input_text.split()) > 1:
-                            position = input_text.split()[1]
+                        position = input_text.split()[1]
+                        if position in shapes:
+                            outputs.append(f"Square already exists at {position}.")
+                        else:
+                            shapes[position] = (100 + (ord(position[0]) - 65) * 100, 100 + (int(position[1]) - 1) * 100)
                             outputs.append(f"Drawing a square at {position}...")
-                            pos = parse_position(position)
-                            draw_square(pos)
-                    elif input_text.startswith("grid"):
+                    elif input_text == "grid":
                         outputs.append("Drawing a grid...")
-                        draw_grid()
                     input_text = ""
                 elif event.key == pygame.K_BACKSPACE:
                     input_text = input_text[:-1]
@@ -88,6 +89,10 @@ def main():
             pygame.draw.line(screen, BLACK, (10, HEIGHT // 2), (WIDTH - 10, HEIGHT // 2), 2)
         if "Drawing a circle..." in outputs:
             draw_circle()
+        if "Drawing a grid..." in outputs:
+            draw_grid()
+        for position, pos in shapes.items():
+            draw_square(pos)
 
         pygame.display.flip()
         clock.tick(30)
