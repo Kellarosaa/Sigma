@@ -1,4 +1,4 @@
-using the following code and add more functions like if the user types square a square appears also add a grid so if the user types "square a1" the square will go in that position. Here is the code.
+using the following code and add more functions like if the user types “square” a square appears, if the user types “grid” a labeled grid appears with boxes from A-E and numbers from 1-5 so if the user types "square a1" the square will go in that area, make sure the user can see what they type and the shapes should be outlines. Here is the code.
 import pygame
 import sys
 
