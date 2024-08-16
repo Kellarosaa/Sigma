@@ -1,0 +1,80 @@
+import pygame
+import sys
+
+# Initialize Pygame
+pygame.init()
+
+# Constants
+WIDTH, HEIGHT = 800, 600
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+FONT_SIZE = 24
+
+# Set up the display
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Mimicking Code Language")
+
+# Set up font
+font = pygame.font.Font(None, FONT_SIZE)
+
+# Variables
+code_input = ""
+variables = {}
+output_text = ""
+
+def draw_square(x, y, size):
+    pygame.draw.rect(screen, BLACK, (x, y, size, size))
+
+def execute_code(code):
+    global output_text
+    lines = code.splitlines()
+    for line in lines:
+        line = line.strip()
+        if line.startswith("sigma(") and line.endswith(")"):
+            output_text = line[6:-1]
+        elif line.startswith("variable(") and line.endswith(")"):
+            var_name = line[9:-1].strip()
+            variables[var_name] = 0
+        elif line.startswith("square onclick add 1 to(") and line.endswith(")"):
+            var_name = line[26:-1].strip()
+            if var_name in variables:
+                variables[var_name] += 1
+
+# Main loop
+running = True
+while running:
+    screen.fill(WHITE)
+    
+    # Draw input box
+    input_box = pygame.Rect(10, 10, WIDTH - 20, 30)
+    pygame.draw.rect(screen, BLACK, input_box, 2)
+    input_surface = font.render(code_input, True, BLACK)
+    screen.blit(input_surface, (input_box.x + 5, input_box.y + 5))
+    
+    # Draw output
+    output_surface = font.render(output_text, True, BLACK)
+    screen.blit(output_surface, (10, 50))
+    
+    # Draw square
+    square_pos = (WIDTH // 2 - 25, HEIGHT // 2 - 25)
+    draw_square(square_pos[0], square_pos[1], 50)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                execute_code(code_input)
+                code_input = ""
+            elif event.key == pygame.K_BACKSPACE:
+                code_input = code_input[:-1]
+            else:
+                code_input += event.unicode
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if square_pos[0] <= event.pos[0] <= square_pos[0] + 50 and square_pos[1] <= event.pos[1] <= square_pos[1] + 50:
+                execute_code(f"square onclick add 1 to(variable_name)")
+
+    pygame.display.flip()
+
+pygame.quit()
+sys.exit()
